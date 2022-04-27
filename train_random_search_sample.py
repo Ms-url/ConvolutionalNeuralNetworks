@@ -1,7 +1,6 @@
 # 2022 3.16 - 3.26
 # yimingli 
 
-
 import struct
 
 from VGG import VGG
@@ -16,16 +15,19 @@ class VGGTest(VGG,  CNNtarinInterface,  MNISTInterface):
 if __name__ == '__main__':
 
     print('-------------------------------------start')
+    '''
+    last FC 不用定义在 strcut 中
+    '''
     # struct = [] # 线性模型
     # struct = ['FC_64'] # 只含一个隐含层
-    struct = ['conv_8'] + ['pool'] + ['conv_12']*3 + ['pool'] + ['conv_36']*3 + ['pool'] + ['FC_64']
+    # struct = [conv_6_5_2_2] + [pool] + [] + [pool] + [] + [] + [] # LetNEet
+    struct = ['conv_8'] + ['pool'] + ['conv_12']*3 + ['pool'] + ['conv_36']*3 + ['pool'] + ['FC_64'] # VGG
 
     vgg = VGGTest(struct)
-    num_samples = 0.7
+    num_samples_ratio = 0.7
 
-    vgg.load_train_data(num_samples)
+    vgg.load_train_data(num_samples_ratio)
 
-    
     train = True
     search_train = False
     if train:
@@ -40,22 +42,4 @@ if __name__ == '__main__':
     
     print('-----------------------------------------end')
 
-    '''
-    vgg.featuremap_shape()
-    vgg.init_params()
-    epoch_more = 2
-    lr = 10**-3
-    reg = 10**-4
-    batch = 64 
-    lr_decay = 0.8 
-    mu = 0.9 
-    optimizer = 'nesterov'
-    regularization = "L2"
-    activation = "ReLU"
-    vgg.context = [lr, reg, batch, lr_decay, mu, optimizer, regularization, activation]
-    vgg.train(epoch_more = 2,  lr = 10**-3,  reg = 10**-4,batch = 64, lr_decay = 0.8, mu = 0.9, 
-                optimizer = 'nesterov', regularization = "L2", activation = "ReLU")
-
-    print('-----------------------------------------end')
-    '''
 

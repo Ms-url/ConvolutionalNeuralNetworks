@@ -3,20 +3,30 @@
 
 import matplotlib.pyplot as plt 
 import numpy as np
-from CNNblockInterface import CNNblockInterface
 from ActivationInterface import ActivationInterface
 from GradientOptimizaerInterface import GradientOptimizerInterface
 from RegularizationInterface import RegularizationInterface
 
 '''
 卷积网络训练类
-'''
-class CNNtarinInterface(CNNblockInterface, ActivationInterface, GradientOptimizerInterface, RegularizationInterface):
-    '''
-    context = [lr, reg, batch, lr_decay, mu, optimizer, regulation, activation]
-    num_train_samples = 训练集
-    num_val_samples = 验证集
+    封装了训练过程
+########################################
+shuffle_data                数据打乱
+methods_check               方式检测
 
+gen_lr_reg                  获取随机学习率和正则化系数
+train                       训练网络                   -> VGG*(模型类) -> all
+train_random_search         使用超参数搜索训练网络      -> train  &  gen_lr_reg  &  methods_check
+
+test                        测试模型
+train_from_checkpoint       加载已有模型训练            -> test             
+test_from_checkpoint        测试已有模型                -> test
+########################################
+'''
+class CNNtarinInterface(ActivationInterface, GradientOptimizerInterface, RegularizationInterface):
+    '''
+    self.context = [lr, reg, batch, lr_decay, mu, optimizer, regulation, activation]
+    
     '''
     def shuffle_data(self):
         '''
@@ -56,21 +66,13 @@ class CNNtarinInterface(CNNblockInterface, ActivationInterface, GradientOptimize
 
         for lr_reg in lr_regs:
             try:
-                # 具体网络模型类接口 init_params()
-                print("##################################################################################lr_reg")
-                print('-------------------------------------init params')
-                self.init_params()
-                # 
-                # context
-                # 
-                self.context = [*lr_reg, batch, lr_decay, mu, optimizer, regularization, activation]
                 print('----------------------------------------------train')
-                self.train( epoch_more, *lr_reg, batch, lr_decay, mu, optimizer, regularization, activation )
+                self.train( epoch_more, *lr_reg, batch, lr_decay, mu, optimizer, regularization, activation, True )
             except KeyboardInterrupt:
                 pass
 
     def train(self, epoch_more = 20,  lr = 10**-4,  reg = 10**-5,batch = 64, lr_decay = 0.8, mu = 0.9, 
-                optimizer = 'nesterov', regularization = "L2", activation = "ReLU" ):
+                optimizer = 'nesterov', regularization = "L2", activation = "ReLU", search = False ):
         '''
         训练网络
         epoch 训练 代 次
@@ -86,6 +88,17 @@ class CNNtarinInterface(CNNblockInterface, ActivationInterface, GradientOptimize
         ax3 = fig.add_subplot(3,1,3)
         ax3.grid(True)
         plt.xlabel('log(lr) = '+ str(round( (np.log10(lr)),2 )) +'   '+ 'log(reg) = ' + str(round(np.log10(reg),2)) , fontsize = 12)
+
+        # 具体网络模型类接口 featuremap_shape() 计算各层特征图尺寸
+        if not search:
+            self.featuremap_shape()
+        # 具体网络模型类接口 init_params()
+        self.init_params()
+        # 
+        # context
+        # 
+        self.context = [lr, reg, batch, lr_decay, mu, optimizer, regularization, activation]
+
         epoch = 0
         val_no = 0
         per_epoch_time = self.num_train_samples // batch

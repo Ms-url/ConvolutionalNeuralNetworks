@@ -7,12 +7,42 @@ import gzip, struct
 
 '''
 MNIST 数据导入类
+#########################################
+_read                   读取MNIST文件
+get_mnist_train         获取训练数据        -> _read
+get_mnist_test          获取验证数据        -> _read
+
+set_data_pro            数据集超参数设置
+
+load_train_data         载入训练数据        -> get_mnist_train  &  set_data_pro
+load_test_data          载入测试数据        -> get_mnist_test  &  set_data_pro
+#########################################
+
+self.num_samples        <--- load_train_data
+        = labels.size     
+self.num_train_samples
+self.num_val_samples
+self.train_data
+self.train_labels
+self.val_data
+self.val_labels         
+
+self.test_data          <--- load_test_data
+self.test_labels       
+
+self.num_class          <--- set_data_pro
+self.im_height 
+self.im_width 
+self.im_dims            
+
+#########################################
 '''
 class MNISTInterface():
 
     def load_train_data(self, num_ratio):
         '''
         载入训练集，随机分为训练集和验证集
+        @param num_ratio: 训练数据在训练集中的比例, num_ratio >= 1 时为手动设置的训练数据数量
         '''
         print('-------------------------------------load train data')
         # 

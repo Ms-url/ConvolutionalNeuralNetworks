@@ -8,6 +8,19 @@ from ActivationInterface import ActivationInterface
 卷积网络基本模块类
     卷积层、池化层、全连接层、softmax损失函数 的向前和反向计算
     参数初始化
+#####################################################
+conv_layer                  卷积层批量计算
+d_conv_layer
+pool_layer                  池化层批量计算
+d_pool_layer 
+fully_connected_layer       全连接层批量计算
+d_fully_connected_layer 
+softmax_layer               softmax层计算
+
+data_loss                   计算数据损失
+d_scores                    获取分值梯度
+param_init                  权重参数初始化
+#####################################################
 '''
 
 class CNNblockInterface(ActivationInterface):

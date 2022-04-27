@@ -3,13 +3,35 @@
 
 import numpy as np
 import re
+from CNNblockInterface import CNNblockInterface
 
 '''
 VGG 类
     VGG 网络结构
-'''
-class VGG():
+###################################################
+__init__                输入struct
+struct_parse            对struct 进行解析
+featuremap_shape        由struct 计算各层特征图尺寸
+init_params             各层网络权重和偏置初始化    -> CNNblockterface -> init_params
 
+reg_loss                计算正则化损失
+d_weight_reg            正则化梯度
+
+forward                 向前传播过程        -> CNNblockterface
+backpropagation         反向传播过程        -> CNNblockterface
+params_updata           参数更新过程
+
+save_checkpoint         保存模型
+load_checkpoint         载入保存的模型
+
+predict                 预测准确率
+###################################################
+'''
+
+class VGG(CNNblockInterface):
+    '''
+    last FC 不用定义在 strcut 中
+    '''
     def __init__(self, struct = []) -> None:
         if len(struct)==0:
             print("A linear model is being used")
@@ -23,13 +45,13 @@ class VGG():
         '''
         layers = []
         for layer in struct:
-            convfull = re.match('^conv_(\d{1,3})_(\d{1})_(\d(1))_(\d(1))$', layer)
+            convfull = re.match('^conv_(\d{1,3})_(\d{1})_(\d{1})_(\d{1})$', layer)
             convdefault = re.match('^conv_(\d{1,3})$', layer)
             pool = re.match('^pool$',layer)
             fc = re.match('^FC_(\d{1,4})$', layer)
 
             if convfull:
-                layers.append( (int(convdefault.group(1)), int(convfull.group(2)), int(convfull.group(3)), int(convfull.group(4)), 'conv' ) )
+                layers.append( (int(convfull.group(1)), int(convfull.group(2)), int(convfull.group(3)), int(convfull.group(4)), 'conv' ) )
             elif convdefault:
                 layers.append( ( int(convdefault.group(1)),3,1,1,'conv') )
             elif pool:
@@ -37,7 +59,7 @@ class VGG():
             elif fc:
                 layers.append( ( int(fc.group(1)), 'FC' ) )
             else:
-                raise ValueError(""" 只能使用 : conv_16_5_2_2 或 conv_16 或 pool 或 FC_64 """)
+                raise ValueError(""" 只能使用 : conv_depth_size_stride_stride 或 conv_depth 或 pool 或 FC_depth """)
 
         layers.append(('','Last_FC'))
         self.layers_params = layers
@@ -63,7 +85,7 @@ class VGG():
                 in_map_shape = (out_height, out_width, out_depth)
 
                 if out_height < filter_size or out_width < filter_size:
-                    raise ValueError("""not compatible with the image size\n""")
+                    raise ValueError("""not compatible with the image size""")
 
             elif layer[-1] == 'pool':
                 filter_size = 2
