@@ -32,6 +32,7 @@ class VGG(CNNblockInterface):
     '''
     last FC 不用定义在 strcut 中
     '''
+    
     def __init__(self, struct = []) -> None:
         if len(struct)==0:
             print("A linear model is being used")

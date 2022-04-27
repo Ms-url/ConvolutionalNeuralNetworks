@@ -59,6 +59,7 @@ class CNNtarinInterface(ActivationInterface, GradientOptimizerInterface, Regular
         # CNN train methods_check()
         print('-------------------------------------methods check')
         self.methods_check(activation, regularization, optimizer )
+        
         # 具体网络模型类接口 featuremap_shape() 计算各层特征图尺寸
         self.featuremap_shape()
         # CNN train gen_lr_reg

@@ -7,6 +7,7 @@ import gzip, struct
 
 '''
 MNIST 数据导入类
+
 #########################################
 _read                   读取MNIST文件
 get_mnist_train         获取训练数据        -> _read

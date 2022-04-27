@@ -20,6 +20,7 @@ softmax_layer               softmax层计算
 data_loss                   计算数据损失
 d_scores                    获取分值梯度
 param_init                  权重参数初始化
+
 #####################################################
 '''
 
