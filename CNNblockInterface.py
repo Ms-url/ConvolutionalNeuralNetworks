@@ -58,7 +58,10 @@ class CNNblockInterface(ActivationInterface):
         matric_data = np.zeros((out_size*batch ,in_depth*filter_size**2))
 
         padding_data = np.zeros( (batch , in_height + 2*padding , in_width + 2*padding ,in_depth ) )
-        padding_data[:,padding:-padding,padding:-padding,:] = in_data
+        if padding == 0:
+            padding_data[:,:,:,:] = in_data
+        else:
+            padding_data[:,padding:-padding,padding:-padding,:] = in_data
 
         height_f = padding_data.shape[1] - filter_size + 1 
         width_f = padding_data.shape[2] - filter_size + 1

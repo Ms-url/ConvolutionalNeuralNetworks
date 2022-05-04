@@ -3,6 +3,7 @@
 
 import matplotlib.pyplot as plt 
 import numpy as np
+import sys
 from ActivationInterface import ActivationInterface
 from GradientOptimizaerInterface import GradientOptimizerInterface
 from RegularizationInterface import RegularizationInterface
@@ -73,10 +74,11 @@ class CNNtarinInterface(ActivationInterface, GradientOptimizerInterface, Regular
                 pass
 
     def train(self, epoch_more = 20,  lr = 10**-4,  reg = 10**-5,batch = 64, lr_decay = 0.8, mu = 0.9, 
-                optimizer = 'nesterov', regularization = "L2", activation = "ReLU", search = False ):
+                optimizer = 'nesterov', regularization = "L2", activation = "ReLU", search = False , retrain = False ,count_batch = 20):
         '''
         训练网络
-        epoch 训练 代 次
+        epoch 训练代次
+        count_batch 统计频, 每训练完batch*count_batch个数据进行一次描点统计 
         '''
         plt.close()
         fig = plt.figure('')
@@ -94,74 +96,94 @@ class CNNtarinInterface(ActivationInterface, GradientOptimizerInterface, Regular
         if not search:
             self.featuremap_shape()
         # 具体网络模型类接口 init_params()
-        self.init_params()
+        print( 'struct: ', self.layers_params )
+        print('')
+        print(f"featuremap_shape: {self.maps_shape}")
+        print('')
+        
+        if not retrain:
+            self.init_params()
         # 
         # context
         # 
         self.context = [lr, reg, batch, lr_decay, mu, optimizer, regularization, activation]
+        print("context: ",self.context)
+        print('')
 
-        epoch = 0
+        epoch = 1
         val_no = 0
         per_epoch_time = self.num_train_samples // batch
+        val_accuracy = 0
 
-        while epoch < epoch_more:
+        while epoch <= epoch_more:
             losses = 0
-            print(f'---------------------------------------------------------------------------------epoch={epoch}')
             # CNN train shuffle_data
             self.shuffle_data()
             for i in range(0, self.num_train_samples, batch):
-                print(f"#################################################### epoch {epoch}/{epoch_more}###### {i}/{self.num_train_samples}")
+
                 batch_data = self.train_data[i:i+batch, : ]
                 labels = self.train_labels[i:i+batch]
 
                 # 具体网络模型类接口 forward()
-                print('---------------------------forward')
+                # print('---------------------------forward')
                 (data_loss, reg_loss) = self.forward(batch_data, labels, reg, regularization, activation)
                 losses += data_loss + reg_loss
                 # 具体网络模型类接口 backpropagation()
-                print('---------------------------back propagation')
+                # print('---------------------------back propagation')
                 self.backpropagation(labels, reg, regularization, activation)
                 # 具体网络模型类接口 params_updata()
-                print('---------------------------params_updata')
+                # print('---------------------------params_updata')
                 self.params_updata( lr, per_epoch_time * epoch + i + 1 , mu, optimizer )
                 # TDOT 具体网络模型类属性
                 update_ratio = self.updata_ratio[0][0]
 
-                if i % (batch * 20) == 0: 
-                    ax.scatter( i/self.num_train_samples+ epoch, np.log10(data_loss), c= 'b', marker = '.')
+                if i % (batch * count_batch) == 0: 
+                    ax.scatter( i/self.num_train_samples+ epoch-1, np.log10(data_loss), c= 'b', marker = '.')
                     # 具体网络模型类接口 predict()
                     # 训练集预测
-                    print('---------------------------predict train_data')
+                    # print('---------------------------predict train_data')
                     train_accuracy = self.predict(batch_data, labels, activation)
                     batch_data_val = self.val_data[val_no: val_no + batch, : ]
                     labels_val = self.val_labels[val_no: val_no + batch]
                     # 具体网络模型类接口 predict()
                     # 验证集预测
-                    print('---------------------------predict val_data')
+                    # print('---------------------------predict val_data')
                     val_accuracy = self.predict( batch_data_val, labels_val, activation )
                     val_no += batch
 
                     if val_no >= self.num_train_samples - batch:
                         val_no = 0
-                    ax2.scatter( i/self.num_train_samples+ epoch, train_accuracy, c= 'r', marker = '*')
-                    ax2.scatter( i/self.num_train_samples+ epoch, val_accuracy, c= 'b', marker = '.')
-                    ax3.scatter( i/self.num_train_samples+ epoch, np.log10(update_ratio), c= 'r', marker = '.')
+                    ta = ax2.scatter( i/self.num_train_samples + epoch-1, train_accuracy, c= 'r', marker = '*')
+                    va = ax2.scatter( i/self.num_train_samples + epoch-1, val_accuracy, c= 'b', marker = '.')
+                    ax2.legend([ta,va],['train_accuracy','val_accuracy'],loc='lower right')
+                    ax3.scatter( i/self.num_train_samples+ epoch-1, np.log10(update_ratio), c= 'r', marker = '.')
                     plt.pause(0.1)
-                    
+
+                progress = i//(self.num_train_samples//20)
+                sys.stdout.write(f"\r{'='*progress+'>'+' '*(20-progress)}## {i}/{self.num_train_samples} epoch: {epoch}/{epoch_more} accuracys:{val_accuracy}")
+                sys.stdout.flush()
+            print('')    
+            
             epoch += 1
             self.context[0] = lr
             lr *= lr_decay
 
-        plt.savefig('checkpoint_'+'(loss_'+str(round(np.log10(losses/per_epoch_time),2))+')_(epoch'+str(round(epoch,2))+')_'+
-                        '_[(lr reg)_'+'('+str(round(np.log10(lr),2))+' '+str(round(np.log10(reg),2))+')]_'+
-                        ' '+str(optimizer)+' '+str(activation)+' '+str(regularization) + '.png')
+        accuracys = self.test(batch, activation)
+        if retrain:
+            restr = 'retrain'
+        else:
+            restr = ''
+
+        plt.savefig('checkpoint_'+'(accuracys_'+str(accuracys)+')_(loss_'+str(round(np.log10(losses/per_epoch_time),2))+')_(epoch_'+restr+str(round(epoch,2))+')_'+
+                        '(lr_'+str(round(np.log10(lr),2))+')_(reg_'+str(round(np.log10(reg),2))+')_'+
+                        str(optimizer)+'_'+str(activation)+'_'+str(regularization) + '.png')
             
         print('--------------------------------save check point')
-        self.save_checkpoint('checkpoint_'+'(loss_'+str(round(np.log10(losses/per_epoch_time),2))+')_(epoch'+str(round(epoch,2))+')_'+
-                        '_[(lr reg)_'+'('+str(round(np.log10(lr),2))+' '+str(round(np.log10(reg),2))+')]_'+
-                        ' '+str(optimizer)+' '+str(activation)+' '+str(regularization) + '.npy')
+        self.save_checkpoint('checkpoint_'+'(accuracys_'+str(accuracys)+')_(loss_'+str(round(np.log10(losses/per_epoch_time),2))+')_(epoch_'+restr+str(round(epoch,2))+')_'+
+                        '(lr_'+str(round(np.log10(lr),2))+')_(reg_'+str(round(np.log10(reg),2))+')_'+
+                        str(optimizer)+'_'+str(activation)+'_'+str(regularization) + '.npy')
 
-        self.test(batch, activation)        
+                
 
     def gen_lr_reg(self, lr = [0, -6] ,reg = [-3, -6], num_try = 10 ):
         '''
@@ -191,7 +213,7 @@ class CNNtarinInterface(ActivationInterface, GradientOptimizerInterface, Regular
         lr_decay = np.double(lr_decay)
         mu = np.double(mu)
 
-        self.train(epoch_more , lr, reg ,batch , lr_decay , mu ,optimizer ,regularization, activation)
+        self.train(epoch_more , lr, reg ,batch , lr_decay , mu ,optimizer ,regularization, activation, retrain=True)
 
     def test_from_checkpoint(self,checkpoint_file_name):
         '''

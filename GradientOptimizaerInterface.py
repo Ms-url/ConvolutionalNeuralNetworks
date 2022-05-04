@@ -31,10 +31,11 @@ class GradientOptimizerInterface():
   
     @staticmethod
     def nesterov(lr, x, dx, v, mu = 0.9, cache = 0, t=1):
+        eps = 1e-8
         pre_v = v
         v = mu*v -lr*dx
         update = v + mu*(v - pre_v)
-        update_ratio = np.sum(np.abs(update)) / np.sum(np.abs(x))
+        update_ratio = np.sum(np.abs(update)) / np.sum(np.abs(x)+eps)
         x += update
         return update_ratio, x, v
 
