@@ -37,7 +37,7 @@ if __name__ == '__main__':
             vgg.train_random_search(lr=[-1.0,-5.0], reg = [-3,-5], num_try= 10, epoch_more = 2, 
             batch = 64, lr_decay = 1, mu = 0.9, optimizer = 'nesterov', regularization = 'L2', activation = 'ReLU')
         else:
-            vgg.train_from_checkpoint(epoch_more = 2, checkpoint_f_name= 'checkpoint_(accuracys_0.9727)_(loss_-0.97)_(epoch_retrain3)_(lr_-3.29)_(reg_-4.0)_nesterov_ReLU_L2.npy')
+            vgg.train_from_checkpoint(epoch_more = 2, checkpoint_f_name= 'checkpoint_(accuracys_0.9849)_(loss_-0.96)_(epoch_retrain2)_(lr_-3.29)_(reg_-4.0)_nesterov_ReLU_L2.npy')
     else:
         vgg.test_from_checkpoint( 'checkpoint_(loss_-0.8)_(epoch2)__[(lr reg)_(-3.19 -4.0)]_ nesterov ReLU L2.npy')
     

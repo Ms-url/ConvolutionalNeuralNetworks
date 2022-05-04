@@ -380,7 +380,7 @@ class VGG(CNNblockInterface):
             if not all(magic_munber == np.array([3,1,4,1,5,9,2,8,8])):
                 raise ValueError('file format wrong')
             self.struct = np.load(f)
-            print('\n The net struct is:',self.struct)
+            print('\n The retrain net struct is:',self.struct)
             print('')
             im_property = np.load(f)
             self.num_class, self.im_dims, self.im_height, self.im_width = im_property
