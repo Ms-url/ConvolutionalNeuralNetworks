@@ -56,7 +56,7 @@ MNISTInterface -- 数据载入类
     # struct = [] # 线性模型
     # struct = ['FC_64'] # 只含一个隐含层
     # struct = ['conv_6_5_1_1'] + ['pool'] + ['conv_16_5_1_1'] + ['pool'] + ['FC_120'] + ['FC_84']  # LeNet
-    # struct = ['conv_8'] + ['pool'] + ['conv_12']*3 + ['pool'] + ['conv_36']*3 + ['pool'] + ['FC_64'] # VGGlite
+    # struct = ['conv_8'] + ['pool'] + ['conv_12']*3 + ['pool'] + ['conv_36']*3 + ['pool'] + ['FC_64'] # VGG
 
     # vgg = VGGTest(struct)
 

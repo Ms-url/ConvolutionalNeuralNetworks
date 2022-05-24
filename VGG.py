@@ -1,4 +1,4 @@
-# 2022 3.10 - 3.16
+# 2022 3.10 - 3.13
 # yimingli
 
 import numpy as np
@@ -60,7 +60,7 @@ class VGG(CNNblockInterface):
             elif fc:
                 layers.append( ( int(fc.group(1)), 'FC' ) )
             else:
-                raise ValueError(""" 只能使用 : conv_depth_size_stride_padding 或 conv_depth 或 pool 或 FC_depth """)
+                raise ValueError(""" 只能使用 : conv_depth_size_stride_stride 或 conv_depth 或 pool 或 FC_depth """)
 
         layers.append(('','Last_FC'))
         self.layers_params = layers
@@ -216,7 +216,7 @@ class VGG(CNNblockInterface):
             self.filter_data.append(filter_data)
             self.matric_data_max_pos.append(matric_data_max_pos)
 
-        # print('---------------------------forward end')
+        print('---------------------------forward end')
 
         # CNN block softmax_layer()
         self.probs = self.softmax_layer(out_maps) # self.probs
@@ -225,8 +225,8 @@ class VGG(CNNblockInterface):
         # CNN VGG reg_loss()
         reg_loss = self.reg_loss(reg, regularization)
 
-        # print(f"data loss = {data_loss}")
-        # print(f"reg loss = {reg_loss}")
+        print(f"data loss = {data_loss}")
+        print(f"reg loss = {reg_loss}")
 
         return data_loss, reg_loss
 
@@ -311,6 +311,8 @@ class VGG(CNNblockInterface):
             self.d_batch_data = d_in_maps
         # VGG d_weight_reg()
         self.d_weight_reg(reg, regularization)
+            
+        print(f'---------------------------back propagation end')
 
     def params_updata(self, lr= 10**-4, t= 0, mu= 0.9, optimizer = 'nesterov' ):
         '''
@@ -380,8 +382,7 @@ class VGG(CNNblockInterface):
             if not all(magic_munber == np.array([3,1,4,1,5,9,2,8,8])):
                 raise ValueError('file format wrong')
             self.struct = np.load(f)
-            print('\n The retrain net struct is:',self.struct)
-            print('')
+            print('\n The net struct is:',self.struct)
             im_property = np.load(f)
             self.num_class, self.im_dims, self.im_height, self.im_width = im_property
             self.layers_params = np.load(f,allow_pickle=True)
@@ -419,5 +420,6 @@ class VGG(CNNblockInterface):
                 array = np.load(f)
                 self.cache_biases.append(array)
 
+            print( 'struct:', self.layers_params )
 
 
