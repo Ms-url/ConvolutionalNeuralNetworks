@@ -35,7 +35,7 @@ if __name__ == '__main__':
         if search_train:
             print('---------------------------------------------------------train random search')
             vgg.train_random_search(lr=[-1.0,-5.0], reg = [-3,-5], num_try= 10, epoch_more = 2, 
-            batch = 64, lr_decay = 1, mu = 0.9, optimizer = 'nesterov', regularization = 'L2', activation = 'ReLU')
+                    batch = 64, lr_decay = 1, mu = 0.9, optimizer = 'nesterov', regularization = 'L2', activation = 'ReLU')
         else:
             vgg.train_from_checkpoint(epoch_more = 2, checkpoint_f_name= 'checkpoint_(accuracys_0.9849)_(loss_-0.96)_(epoch_retrain2)_(lr_-3.29)_(reg_-4.0)_nesterov_ReLU_L2.npy')
     else:

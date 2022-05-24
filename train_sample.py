@@ -14,22 +14,22 @@ if __name__ == '__main__':
 
     print('-------------------------------------start')
 
-    struct = [] # 线性模型
-    # struct = ['FC_64']+['FC_128'] # 前馈神经网络
+    # struct = [] # 线性模型
+    struct = ['FC_64']+['FC_128'] # 前馈神经网络
     # struct = ['conv_6_5_1_2'] + ['pool'] + ['conv_16_5_1_0'] + ['pool'] + ['FC_120'] + ['FC_84']  # LeNet
    
     # struct = ['conv_64']*2 + ['pool'] + ['conv_128']*2 + ['pool'] + ['conv_256']*3 + ['pool'] \
     #        + ['conv_512']*3 + ['pool'] + ['conv_512']*3 + ['pool'] + ['FC_4096'] + ['FC_4096'] # VGG 
 
-    # struct = ['conv_8'] + ['pool'] + ['conv_12']*3 + ['pool'] + ['conv_36']*3 + ['pool'] + ['FC_64'] # VGGlite
-    # struct = ['conv_16']*2 + ['pool'] + ['conv_32']*3 + ['pool'] + ['conv_64']*3 + ['pool'] + ['FC_128']*2 # VGGlite2
+    # struct = ['conv_8'] + ['pool'] + ['conv_12']*3 + ['pool'] + ['conv_36']*3 + ['pool'] + ['FC_64'] # lite
+    # struct = ['conv_16']*2 + ['pool'] + ['conv_32']*3 + ['pool'] + ['conv_64']*3 + ['pool'] + ['FC_128']*2 # VGGlite
 
     vgg = VGGTest(struct)
-    num_samples_ratio = 0.3 # 训练数据百分比
+    num_samples_ratio = 0.7 # 训练数据百分比
 
     vgg.load_train_data(num_samples_ratio)
 
-    epoch_more = 4
+    epoch_more = 6
     lr = 10**-3
     reg = 10**-4
     batch = 64 
