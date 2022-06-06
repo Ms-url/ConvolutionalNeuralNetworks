@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # struct = ['conv_64']*2 + ['pool'] + ['conv_128']*2 + ['pool'] + ['conv_256']*3 + ['pool'] \
     #        + ['conv_512']*3 + ['pool'] + ['conv_512']*3 + ['pool'] + ['FC_4096'] + ['FC_4096'] # VGG 
 
-    # struct = ['conv_8'] + ['pool'] + ['conv_12']*3 + ['pool'] + ['conv_36']*3 + ['pool'] + ['FC_64'] # lite
+    # struct = ['conv_8']*2 + ['pool'] + ['conv_12']*3 + ['pool'] + ['conv_36']*3 + ['pool'] + ['FC_64'] # lite
     # struct = ['conv_16']*2 + ['pool'] + ['conv_32']*3 + ['pool'] + ['conv_64']*3 + ['pool'] + ['FC_128']*2 # VGGlite
 
     vgg = VGGTest(struct)
