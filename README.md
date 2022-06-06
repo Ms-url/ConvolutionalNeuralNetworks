@@ -4,5 +4,4 @@
 ## ConvolutionalNeuralNetworks
 cnn python 无框架实现
 ## 注
-课程结束后该仓库会设为私有（如果我记得的话）,
-tensorflow实现保持public
+课程结束后该仓库会设为私有
