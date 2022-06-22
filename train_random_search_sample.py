@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # struct = [] # 线性模型
     # struct = ['FC_64'] # 只含一个隐含层
     # struct = [conv_6_5_2_2] + [pool] + [] + [pool] + [] + [] + [] # LetNEet
-    # struct = ['conv_8'] + ['pool'] + ['conv_12']*3 + ['pool'] + ['conv_36']*3 + ['pool'] + ['FC_64'] # VGGlite
+    # struct = ['conv_8'] + ['pool'] + ['conv_12']*3 + ['pool'] + ['conv_36']*3 + ['pool'] + ['FC_64'] # lite
     struct = ['conv_16']*2 + ['pool'] + ['conv_32']*3 + ['pool'] + ['conv_64']*3 + ['pool'] + ['FC_128']*2 # VGGlite2
 
     vgg = VGGTest(struct)
